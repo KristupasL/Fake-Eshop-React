@@ -1,0 +1,51 @@
+.Products {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.Product {
+  max-width: 300px;
+  box-sizing: border-box;
+  margin: 10px;
+  overflow: hidden;
+  border-radius: 5px;
+  border: 2px solid #e4e4e4;
+  border-top: 0px;
+
+  &--image {
+    height: 150px;
+    overflow: hidden;
+
+    img {
+      width: 100%;
+    }
+  }
+
+  &--info {
+    padding: 10px 10px 20px;
+    h3 {
+      font-size: 20px;
+      line-height: 24px;
+      font-weight: 600;
+      padding: 5px;
+    }
+  }
+
+  &--cta {
+    padding: 10px 10px 20px;
+    display: flex;
+    justify-content: space-between;
+
+    button {
+      border: 1px solid #e4e4e4;
+      border-radius: 3px;
+      background: transparent;
+      margin: 5px;
+      transition: background-color 0.3s;
+      &:hover {
+        background: #e4e4e4;
+      }
+    }
+  }
+}
