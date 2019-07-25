@@ -1,53 +1,36 @@
 import React from "react";
-import { Loader } from "../../components";
 import "./index.scss";
+import { Loader, ProductCard } from "../../components";
 
-function Products({ isLoading, error, products = [] }) {
+function Products({
+  isLoading,
+  error,
+  products = [],
+  favorites,
+  cart,
+  toggleFavorite,
+  addToCart,
+  removeFromCart
+}) {
   return (
     <div className="Products">
       {isLoading && <Loader />}
       {error && <p>{error}</p>}
-      {products.map(
-        ({ name, image, price, currencySymbol, description, id }) => (
-          <div key={id} className="Product">
-            <div className="Product--image">
-              <img alt={`product: ${name}`} src={image} />
-            </div>
+      {products.map(data => {
+        const { count = 0 } = cart.find(({ id }) => id === data.id) || {};
 
-            <div className="Product--info">
-              <h3>{name}</h3>
-              <p>{description}</p>
-            </div>
-
-            <div className="Product--cta">
-              <p>
-                <span>Price:</span> <span>{`${price}${currencySymbol}`}</span>
-              </p>
-              <div>
-                <button
-                  type="button"
-                  onClick={() => console.log("add to favourites", name)}
-                >
-                  <span
-                    role="img"
-                    aria-label="add to favorites heart illustration"
-                  >
-                    ❤️
-                  </span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => console.log("add to cart", name)}
-                >
-                  <span role="img" aria-label="add to cart illustration">
-                    🛒
-                  </span>
-                </button>
-              </div>
-            </div>
-          </div>
-        )
-      )}
+        return (
+          <ProductCard
+            removeFromCart={removeFromCart}
+            toggleFavorite={toggleFavorite}
+            addToCart={addToCart}
+            {...data}
+            key={data.id}
+            isFavorite={favorites.includes(data.id)}
+            cartCount={count}
+          />
+        );
+      })}
     </div>
   );
 }
