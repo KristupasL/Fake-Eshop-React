@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   BrowserRouter as Router,
   Route,
@@ -16,7 +16,6 @@ import {
 } from "./pages";
 import { Layout } from "./components";
 import { useFetch } from "./hooks";
-import { toggleArrayItem } from "./util";
 import store from "./state";
 import { ROUTES } from "../constants";
 
@@ -31,8 +30,6 @@ function onSuccess(payload) {
 }
 
 function App() {
-  const [favorites, setFavorites] = useState([]);
-  const [cart, setCart] = useState([]);
   const { loading: isLoading, products, error } = useFetch({
     onError,
     onSuccess,
@@ -40,28 +37,6 @@ function App() {
     initialState: [],
     dataKey: "products"
   });
-
-  const toggleFavorite = id => {
-    setFavorites(toggleArrayItem(favorites, id));
-  };
-
-  const addToCart = id => {
-    const itemIndex = cart.findIndex(item => item.id === id);
-
-    if (itemIndex > -1) {
-      setCart(
-        cart.map((item, i) =>
-          i === itemIndex ? { ...item, count: item.count + 1 } : item
-        )
-      );
-    } else {
-      setCart([...cart, { id, count: 1 }]);
-    }
-  };
-
-  const removeFromCart = id => {
-    setCart(cart.filter(item => item.id !== id));
-  };
 
   return (
     <Provider store={store}>
@@ -71,38 +46,10 @@ function App() {
             <Route
               path={ROUTES.defaultPage}
               exact
-              render={() => (
-                <Products
-                  toggleFavorite={toggleFavorite}
-                  addToCart={addToCart}
-                  removeFromCart={removeFromCart}
-                  products={products}
-                  cart={cart}
-                  favorites={favorites}
-                  isLoading={isLoading}
-                  error={error}
-                />
-              )}
+              render={() => <Products isLoading={isLoading} error={error} />}
             />
-            <Route
-              path={ROUTES.cart}
-              exact
-              render={() => <Cart cart={cart} products={products} />}
-            />
-            <Route
-              path={ROUTES.favorites}
-              exact
-              render={() => (
-                <Favorites
-                  toggleFavorite={toggleFavorite}
-                  removeFromCart={removeFromCart}
-                  addToCart={addToCart}
-                  favorites={favorites}
-                  products={products}
-                  cart={cart}
-                />
-              )}
-            />
+            <Route path={ROUTES.cart} exact component={Cart} />
+            <Route path={ROUTES.favorites} exact component={Favorites} />
             <Route
               path={ROUTES.product}
               exact
