@@ -5,6 +5,7 @@ import {
   Switch,
   Redirect
 } from "react-router-dom";
+import { Provider } from "react-redux";
 
 import {
   Products,
@@ -16,10 +17,17 @@ import {
 import { Layout } from "./components";
 import { useFetch } from "./hooks";
 import { toggleArrayItem } from "./util";
+import store from "./state";
 import { ROUTES } from "../constants";
 
 function onError() {
   return "Oops! No products found";
+}
+
+function onSuccess(payload) {
+  store.dispatch({ type: "SET_PRODUCTS", payload });
+
+  return payload;
 }
 
 function App() {
@@ -27,6 +35,7 @@ function App() {
   const [cart, setCart] = useState([]);
   const { loading: isLoading, products, error } = useFetch({
     onError,
+    onSuccess,
     src: "https://boiling-reaches-93648.herokuapp.com/food-shop/products",
     initialState: [],
     dataKey: "products"
@@ -55,65 +64,67 @@ function App() {
   };
 
   return (
-    <Router>
-      <Layout>
-        <Switch>
-          <Route
-            path={ROUTES.defaultPage}
-            exact
-            render={() => (
-              <Products
-                toggleFavorite={toggleFavorite}
-                addToCart={addToCart}
-                removeFromCart={removeFromCart}
-                products={products}
-                cart={cart}
-                favorites={favorites}
-                isLoading={isLoading}
-                error={error}
-              />
-            )}
-          />
-          <Route
-            path={ROUTES.cart}
-            exact
-            render={() => <Cart cart={cart} products={products} />}
-          />
-          <Route
-            path={ROUTES.favorites}
-            exact
-            render={() => (
-              <Favorites
-                toggleFavorite={toggleFavorite}
-                removeFromCart={removeFromCart}
-                addToCart={addToCart}
-                favorites={favorites}
-                products={products}
-                cart={cart}
-              />
-            )}
-          />
-          <Route
-            path={ROUTES.product}
-            exact
-            render={props => {
-              const { id } = props.match.params;
-              const product = products.find(product => product.id === id);
-
-              return (
-                <SingleProduct
-                  {...props}
-                  product={product}
+    <Provider store={store}>
+      <Router>
+        <Layout>
+          <Switch>
+            <Route
+              path={ROUTES.defaultPage}
+              exact
+              render={() => (
+                <Products
+                  toggleFavorite={toggleFavorite}
+                  addToCart={addToCart}
+                  removeFromCart={removeFromCart}
+                  products={products}
+                  cart={cart}
+                  favorites={favorites}
                   isLoading={isLoading}
+                  error={error}
                 />
-              );
-            }}
-          />
-          <Redirect exact from={ROUTES.home} to={ROUTES.defaultPage} />
-          <Route component={PageNotFound} />
-        </Switch>
-      </Layout>
-    </Router>
+              )}
+            />
+            <Route
+              path={ROUTES.cart}
+              exact
+              render={() => <Cart cart={cart} products={products} />}
+            />
+            <Route
+              path={ROUTES.favorites}
+              exact
+              render={() => (
+                <Favorites
+                  toggleFavorite={toggleFavorite}
+                  removeFromCart={removeFromCart}
+                  addToCart={addToCart}
+                  favorites={favorites}
+                  products={products}
+                  cart={cart}
+                />
+              )}
+            />
+            <Route
+              path={ROUTES.product}
+              exact
+              render={props => {
+                const { id } = props.match.params;
+                const product = products.find(product => product.id === id);
+
+                return (
+                  <SingleProduct
+                    {...props}
+                    product={product}
+                    isLoading={isLoading}
+                  />
+                );
+              }}
+            />
+            <Redirect exact from={ROUTES.home} to={ROUTES.defaultPage} />
+            <Route component={PageNotFound} />
+          </Switch>
+        </Layout>
+      </Router>
+    </Provider>
   );
 }
 
