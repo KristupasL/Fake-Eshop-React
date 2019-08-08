@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import "./index.scss";
+import { withBackgroundColor } from "../BackgroundContext";
 
 function ProductCard({
   name,
@@ -13,14 +14,15 @@ function ProductCard({
   cartCount,
   toggleFavorite,
   addToCart,
-  removeFromCart
+  removeFromCart,
+  background
 }) {
   const className = isFavorite
     ? "ProductCard ProductCard__favorite"
     : "ProductCard";
 
   return (
-    <div className={className}>
+    <div style={{ background }} className={className}>
       <div className="ProductCard--image">
         <img alt={`product: ${name}`} src={image} />
       </div>
@@ -61,4 +63,4 @@ function ProductCard({
   );
 }
 
-export default ProductCard;
+export default withBackgroundColor(ProductCard);
